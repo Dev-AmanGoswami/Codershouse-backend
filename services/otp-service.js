@@ -22,7 +22,7 @@ class OtpService{
             from: process.env.SENDER_EMAIL,
             to: email,
             subject: 'EchoRoom Authentication',
-            text: `Dear User,\n\nYour One-Time Password (OTP) for EchoRoom authentication is:\n\n${otp}\n\nThis OTP is valid for the next 10 minutes. Please do not share this code with anyone.\n\nIf you did not request this OTP, please contact our support team immediately at echoroom.support@gmail.com.\n\nThank you for choosing EchoRoom!\n\nBest regards,\nThe EchoRoom Team`
+            text: `Dear User,\n\nYour One-Time Password (OTP) for EchoRoom authentication is:\n\n${otp}\n\nThis OTP is valid for the next 2 minutes. Please do not share this code with anyone.\n\nIf you did not request this OTP, please contact our support team immediately at echoroom.support@gmail.com.\n\nThank you for choosing EchoRoom!\n\nBest regards,\nThe EchoRoom Team`
         }
         return await transporter.sendMail(mailOptions, function(error, info){
             if (error) {
