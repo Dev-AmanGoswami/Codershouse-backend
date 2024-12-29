@@ -6,3 +6,6 @@
 
 # environment
 /.env
+
+# config
+/config
