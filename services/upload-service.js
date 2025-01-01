@@ -20,6 +20,7 @@ class UploadService{
                 body: fs.createReadStream(filePath), // Read the file from the given file path
             };
 
+            // Saving file to google drive
             const response = await drive.files.create({
                 resource: fileMetadata,
                 media: media,
@@ -34,7 +35,7 @@ class UploadService{
                     type: "anyone", // Allow anyone with the link to view
                 },
             });
-            
+
             const driveLink = `https://drive.google.com/uc?id=${response.data.id}`;
             
             // Delete file to save space

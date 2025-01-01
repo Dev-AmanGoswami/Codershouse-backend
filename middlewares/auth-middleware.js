@@ -2,12 +2,12 @@ const tokenService = require("../services/token-service");
 
 module.exports = async (req, res, next) => {
     try{
-        const { accessToken } = req.cookies;
-        if(!accessToken){
+        const { accesstoken } = req.cookies;
+        if(!accesstoken){
             throw new Error();
         }
-        const userData = await tokenService.verifyAccessToken(accessToken);
-        if(userData){
+        const userData = await tokenService.verifyAccessToken(accesstoken);
+        if(!userData){
             throw new Error();
         }
         req.user = userData;

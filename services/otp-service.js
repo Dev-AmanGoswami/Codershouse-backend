@@ -17,7 +17,6 @@ class OtpService{
         return otp;
     }
     async sendByEmail(email,otp) {
-        console.log("Aman: ",process.env.SENDER_EMAIL,process.env.SENDER_PASSWORD);
         const mailOptions = {
             from: process.env.SENDER_EMAIL,
             to: email,
@@ -32,6 +31,7 @@ class OtpService{
             }
         });
     }
+    
     verifyOtp(hashedOtp, data) {
         let computedHash = hashService.hashOtp(data);
         return computedHash === hashedOtp;

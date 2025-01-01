@@ -52,8 +52,8 @@ class AuthController{
             if(!user){
                 user = await userService.createUser({ email });
             }
-        }catch(err){
-            console.log(err);
+        }catch(error){
+            console.log(error);
             return res.status(500).json({ message: 'DB error' });
         }
 
@@ -75,8 +75,67 @@ class AuthController{
         const userDto = new UserDto(user);
         res.json({ user: userDto, auth: true });
     }
-    async activate(req,res){
+    
+    async refresh(req, res){
+        const { refreshtoken: refreshTokenFromCookie } = req.cookies;
+        let userData;
+        try{
+            userData = await tokenService.verifyRefreshToken(refreshTokenFromCookie);
+        }catch(error){
+            console.log(error);
+            res.status(401).json({ message: 'Invalid token.'})
+        }        
+        // Check if in database
+        try{
+            const token = await tokenService.findRefreshToken( userData._id, refreshTokenFromCookie );
+            if(!token){
+                return res.status(401).json({ message: 'Invalid token.'})
+            }
+        }catch(error){
+            console.log(error);
+            return res.status(500).json({ message: 'Internal server error.' });
+        }
+    
+        // Check valid user
+        const user = await userService.findUser({ _id: userData._id });
+        if(!user){
+            return res.status(404).json({ message: 'No such user.'});
+        }
+
+        // Generating new tokens
+        const { refreshToken, accessToken } = tokenService.generateTokens({ _id: userData._id });
         
+        // Update refresh token in Db
+        try{
+            await tokenService.updateRefreshToken(userData._id, refreshToken);
+        }catch(error){
+            console.log(error);
+            return res.status(500).json({ message: 'Internal server error.' });
+        }
+
+        res.cookie('refreshtoken', refreshToken, {
+            maxAge: 1000 * 60 * 60 * 24 * 30,
+            httpOnly: true
+        });
+
+        res.cookie('accesstoken', accessToken, {
+            maxAge: 1000 * 60 * 60 * 24 * 30,
+            httpOnly: true
+        });
+
+        // Response
+        const userDto = new UserDto(user);
+        res.json({ user: userDto, auth: true });
+    }
+
+    async logout(req, res){
+        // Delete refresh token from db
+        const { refreshtoken } = req.cookies;
+        await tokenService.removeToken( refreshtoken );
+        // Removing Cookies 
+        res.clearCookie('refreshtoken');
+        res.clearCookie('accesstoken');
+        res.json({ user: null, auth: false })
     }
 }
 
