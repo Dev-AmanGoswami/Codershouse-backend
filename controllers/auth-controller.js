@@ -28,8 +28,8 @@ class AuthController{
             console.log(err);
             return res.status(500).json({ message: "Email sending failed "});
         }
-        res.json({ hash: hash });
     }
+
     async verifyOtp(req, res){
         const { otp, hash, email } = req.body;
         if(!otp || !hash || !email){
@@ -63,12 +63,14 @@ class AuthController{
         // Attaching http only cookie, so that Client JS won't be able to access it
         res.cookie('refreshtoken', refreshToken, {
             maxAge: 1000 * 60 * 60 * 24 * 30,
-            httpOnly: true
+            httpOnly: true,
+            secure: false
         });
 
         res.cookie('accesstoken', accessToken, {
             maxAge: 1000 * 60 * 60 * 24 * 30,
-            httpOnly: true
+            httpOnly: true,
+            secure: false
         });
 
         // Transforming object recieved from MongoDb
@@ -78,12 +80,15 @@ class AuthController{
     
     async refresh(req, res){
         const { refreshtoken: refreshTokenFromCookie } = req.cookies;
+        if(!refreshTokenFromCookie){
+            if (!refreshTokenFromCookie) return res.status(401).json({ message: 'Unauthorized' });
+        }
         let userData;
         try{
             userData = await tokenService.verifyRefreshToken(refreshTokenFromCookie);
         }catch(error){
             console.log(error);
-            res.status(401).json({ message: 'Invalid token.'})
+            return res.status(401).json({ message: 'Invalid token.'})
         }        
         // Check if in database
         try{
@@ -115,12 +120,14 @@ class AuthController{
 
         res.cookie('refreshtoken', refreshToken, {
             maxAge: 1000 * 60 * 60 * 24 * 30,
-            httpOnly: true
+            httpOnly: true,
+            secure: false
         });
 
         res.cookie('accesstoken', accessToken, {
             maxAge: 1000 * 60 * 60 * 24 * 30,
-            httpOnly: true
+            httpOnly: true,
+            secure: false
         });
 
         // Response
