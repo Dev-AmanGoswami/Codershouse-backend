@@ -16,8 +16,7 @@ class RoomsController{
     }
 
     async index(req, res){
-        const rooms = roomService.getAllRooms(['open']);
-        
+        const rooms = await roomService.getAllRooms(['open']);
         // Below code will be used optimally when pagination will be implemented here
         const allRooms = rooms.map(room => new RoomDto(room));
         return res.json(allRooms);

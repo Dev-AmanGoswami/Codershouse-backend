@@ -17,7 +17,7 @@ class RoomService{
         const rooms = await roomModel.find({ roomType: { $in: types }})
         .populate('speakers') // Populate used to show speaker and ownerId document object
         .populate('ownerId')
-        .exec
+        .exec();
         return rooms;
     }
 }
