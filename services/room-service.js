@@ -20,6 +20,11 @@ class RoomService{
         .exec();
         return rooms;
     }
+
+    async getRoom(roomId){
+        const room = await roomModel.findOne({ _id: roomId });
+        return room;
+    }
 }
 
 module.exports = new RoomService();
